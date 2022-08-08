@@ -15,8 +15,9 @@
 package gowebp
 
 /*
-#cgo CFLAGS: -I./internal/libwebp-1.0.2/
-#cgo CFLAGS: -I./internal/libwebp-1.0.2/src/
+#cgo CFLAGS: -I./internal/libwebp-1.2.4/
+#cgo CFLAGS: -I./internal/libwebp-1.2.4/src/
+#cgo CFLAGS: -I./internal/libwebp-1.2.4/sharpyuv/
 #cgo CFLAGS: -I./internal/include/
 #cgo CFLAGS: -Wno-pointer-sign -w -DWEBP_USE_THREAD
 #cgo !windows LDFLAGS: -lm
