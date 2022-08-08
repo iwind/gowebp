@@ -1,4 +1,4 @@
-module gowebp
+module github.com/iwind/gowebp
 
 go 1.18
 
