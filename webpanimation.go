@@ -17,6 +17,8 @@ type WebpAnimation struct {
 	WebPData               *WebPData
 	WebPMux                *WebPMux
 	WebPPictures           []*WebPPicture
+
+	parentImage *image.RGBA
 }
 
 // NewWebpAnimation Initialize animation
@@ -44,13 +46,37 @@ func (wpa *WebpAnimation) ReleaseMemory() {
 func (wpa *WebpAnimation) AddFrame(img image.Image, timestamp int, webpcfg WebPConfig) error {
 	var webPPicture *WebPPicture = nil
 	var m *image.RGBA
+
 	if img != nil {
 		if v, ok := img.(*image.RGBA); ok {
 			m = v
 		} else {
-			b := img.Bounds()
-			m = image.NewRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
-			draw.Draw(m, m.Bounds(), img, b.Min, draw.Src)
+			var b = img.Bounds()
+
+			palettedImg, ok := img.(*image.Paletted)
+			var isOpaque = false
+			var hasMask = false
+			if ok {
+				if (palettedImg.Opaque() && b.Min.X == 0 && b.Max.Y == 0 && b.Max.X == wpa.Width && b.Max.Y == wpa.Height) ||
+					wpa.parentImage == nil { // if full opaque frame, we create a new image
+					m = image.NewRGBA(image.Rect(0, 0, wpa.Width, wpa.Height))
+					isOpaque = true
+				} else {
+					m = wpa.parentImage
+					hasMask = true
+				}
+			} else {
+				m = image.NewRGBA(image.Rect(0, 0, wpa.Width, wpa.Height))
+			}
+
+			if hasMask {
+				draw.Draw(m, b, img, b.Min, draw.Over)
+			} else {
+				draw.Draw(m, b, img, b.Min, draw.Src)
+			}
+			if isOpaque {
+				wpa.parentImage = m
+			}
 		}
 
 		webPPicture = &WebPPicture{}
@@ -63,7 +89,6 @@ func (wpa *WebpAnimation) AddFrame(img image.Image, timestamp int, webpcfg WebPC
 			return err
 		}
 	}
-
 	res := WebPAnimEncoderAdd(wpa.AnimationEncoder, webPPicture, timestamp, webpcfg)
 	if res == 0 {
 		return errors.New("Failed to add frame in animation ecoder")
