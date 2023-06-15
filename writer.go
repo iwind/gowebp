@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+//go:build cgo
 // +build cgo
 
 package gowebp
@@ -9,6 +10,7 @@ package gowebp
 import (
 	"image"
 	"image/color"
+	"image/draw"
 	"io"
 	"os"
 	"reflect"
@@ -44,6 +46,7 @@ func Encode(w io.Writer, m image.Image, opt *Options) (err error) {
 
 func encode(w io.Writer, m image.Image, opt *Options) (err error) {
 	var output []byte
+
 	if opt != nil && opt.Lossless {
 		switch m := adjustImage(m).(type) {
 		case *image.Gray:
@@ -59,6 +62,15 @@ func encode(w io.Writer, m image.Image, opt *Options) (err error) {
 				output, err = EncodeExactLosslessRGBA(m)
 			} else {
 				output, err = EncodeLosslessRGBA(m)
+			}
+			if err != nil {
+				return
+			}
+		case *image.NRGBA:
+			if opt.Exact {
+				output, err = EncodeExactLosslessNRGBA(m)
+			} else {
+				output, err = EncodeLosslessNRGBA(m)
 			}
 			if err != nil {
 				return
@@ -83,6 +95,10 @@ func encode(w io.Writer, m image.Image, opt *Options) (err error) {
 			}
 		case *image.RGBA:
 			if output, err = EncodeRGBA(m, quality); err != nil {
+				return
+			}
+		case *image.NRGBA:
+			if output, err = EncodeNRGBA(m, quality); err != nil {
 				return
 			}
 		default:
@@ -139,7 +155,7 @@ func adjustImage(m image.Image) image.Image {
 	case *image.RGBA64:
 		return toRGBAImage(m)
 	case *image.NRGBA:
-		return toRGBAImage(m)
+		return toNRGBAImage(m)
 	case *image.NRGBA64:
 		return toRGBAImage(m)
 
@@ -182,4 +198,14 @@ func toRGBAImage(m image.Image) *image.RGBA {
 		}
 	}
 	return rgba
+}
+
+func toNRGBAImage(m image.Image) *image.NRGBA {
+	if dst, ok := m.(*image.NRGBA); ok {
+		return dst
+	}
+
+	var dst = image.NewNRGBA(m.Bounds())
+	draw.Draw(dst, m.Bounds(), m, m.Bounds().Min, draw.Src)
+	return dst
 }

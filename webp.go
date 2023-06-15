@@ -121,6 +121,12 @@ func EncodeRGBA(m image.Image, quality float32) (data []byte, err error) {
 	return
 }
 
+func EncodeNRGBA(m image.Image, quality float32) (data []byte, err error) {
+	p := toNRGBAImage(m)
+	data, err = webpEncodeRGBA(p.Pix, p.Rect.Dx(), p.Rect.Dy(), p.Stride, quality)
+	return
+}
+
 func EncodeLosslessGray(m image.Image) (data []byte, err error) {
 	p := toGrayImage(m)
 	data, err = webpEncodeLosslessGray(p.Pix, p.Rect.Dx(), p.Rect.Dy(), p.Stride)
@@ -143,6 +149,18 @@ func EncodeLosslessRGBA(m image.Image) (data []byte, err error) {
 // exact: preserve RGB values in transparent area.
 func EncodeExactLosslessRGBA(m image.Image) (data []byte, err error) {
 	p := toRGBAImage(m)
+	data, err = webpEncodeLosslessRGBA(1, p.Pix, p.Rect.Dx(), p.Rect.Dy(), p.Stride)
+	return
+}
+
+func EncodeLosslessNRGBA(m image.Image) (data []byte, err error) {
+	p := toNRGBAImage(m)
+	data, err = webpEncodeLosslessNRGBA(0, p.Pix, p.Rect.Dx(), p.Rect.Dy(), p.Stride)
+	return
+}
+
+func EncodeExactLosslessNRGBA(m image.Image) (data []byte, err error) {
+	p := toNRGBAImage(m)
 	data, err = webpEncodeLosslessRGBA(1, p.Pix, p.Rect.Dx(), p.Rect.Dy(), p.Stride)
 	return
 }
