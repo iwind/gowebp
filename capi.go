@@ -15,9 +15,9 @@
 package gowebp
 
 /*
-#cgo CFLAGS: -I./internal/libwebp-1.2.4/
-#cgo CFLAGS: -I./internal/libwebp-1.2.4/src/
-#cgo CFLAGS: -I./internal/libwebp-1.2.4/sharpyuv/
+#cgo CFLAGS: -I./internal/libwebp-1.3.0/
+#cgo CFLAGS: -I./internal/libwebp-1.3.0/src/
+#cgo CFLAGS: -I./internal/libwebp-1.3.0/sharpyuv/
 #cgo CFLAGS: -I./internal/include/
 #cgo CFLAGS: -Wno-pointer-sign -w -DWEBP_USE_THREAD
 #cgo !windows LDFLAGS: -lm
@@ -282,6 +282,33 @@ func webpEncodeLosslessRGB(pix []byte, width, height, stride int) (output []byte
 }
 
 func webpEncodeLosslessRGBA(exact int, pix []byte, width, height, stride int) (output []byte, err error) {
+	if len(pix) == 0 || width <= 0 || height <= 0 || stride <= 0 {
+		err = errors.New("webpEncodeLosslessRGBA: bad arguments")
+		return
+	}
+	if stride < width*4 && len(pix) < height*stride {
+		err = errors.New("webpEncodeLosslessRGBA: bad arguments")
+		return
+	}
+
+	var cptr_size C.size_t
+	var cptr = C.webpEncodeLosslessRGBA(
+		C.int(exact), (*C.uint8_t)(unsafe.Pointer(&pix[0])), C.int(width), C.int(height),
+		C.int(stride),
+		&cptr_size,
+	)
+	if cptr == nil || cptr_size == 0 {
+		err = errors.New("webpEncodeLosslessRGBA: failed")
+		return
+	}
+	defer C.free(unsafe.Pointer(cptr))
+
+	output = make([]byte, int(cptr_size))
+	copy(output, ((*[1 << 30]byte)(unsafe.Pointer(cptr)))[0:len(output):len(output)])
+	return
+}
+
+func webpEncodeLosslessNRGBA(exact int, pix []byte, width, height, stride int) (output []byte, err error) {
 	if len(pix) == 0 || width <= 0 || height <= 0 || stride <= 0 {
 		err = errors.New("webpEncodeLosslessRGBA: bad arguments")
 		return

@@ -39,8 +39,8 @@ func clearOldGenFiles() {
 }
 
 func genIncludeFiles() {
-	ss := parseCMakeListsTxt("internal/libwebp-1.2.4/CMakeLists.txt", "WEBP_SRC_DIR", "*.c")
-	muxSS, err := findFiles("internal/libwebp-1.2.4/src/mux", "*.c")
+	ss := parseCMakeListsTxt("internal/libwebp-1.3.0/CMakeLists.txt", "WEBP_SRC_DIR", "*.c")
+	muxSS, err := findFiles("internal/libwebp-1.3.0/src/mux", "*.c")
 	if err != nil {
 		log.Fatal(err)
 	}
