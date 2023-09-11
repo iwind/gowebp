@@ -5,6 +5,9 @@
 package gowebp
 
 //#include "webp.h"
+/*
+#include "webp/encode.h"
+*/
 import "C"
 import "unsafe"
 
@@ -25,6 +28,8 @@ type (
 	C_int32_t C.int32_t
 	C_int64_t C.int64_t
 )
+
+const WebPMaxDimension = int((C.int)(C.WEBP_MAX_DIMENSION))
 
 func C_webpGetInfo(
 	data *C_uint8_t, data_size C_size_t,
@@ -180,7 +185,7 @@ func C_webpEncodeLosslessRGBA(
 	output_size *C_size_t,
 ) *C_uint8_t {
 	return (*C_uint8_t)(C.webpEncodeLosslessRGBA(
-		(C.int) (exact),
+		(C.int)(exact),
 		(*C.uint8_t)(pix),
 		(C.int)(width), (C.int)(height), (C.int)(stride),
 		(*C.size_t)(output_size),
