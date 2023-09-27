@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-WEBP_ROOT=libwebp-1.3.0
+WEBP_ROOT=libwebp-1.3.2
 
 gcc -I${WEBP_ROOT}  \
     -I"${WEBP_ROOT}/examples" \
