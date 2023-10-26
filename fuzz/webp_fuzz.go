@@ -8,18 +8,18 @@ package fuzz
 import (
 	"bytes"
 
-	"github.com/chai2010/webp"
+	"github.com/iwind/gowebp"
 )
 
 func Fuzz(data []byte) int {
-	cfg, err := webp.DecodeConfig(bytes.NewReader(data))
+	cfg, err := gowebp.DecodeConfig(bytes.NewReader(data))
 	if err != nil {
 		return 0
 	}
 	if cfg.Width*cfg.Height > 1e6 {
 		return 0
 	}
-	if _, err := webp.Decode(bytes.NewReader(data)); err != nil {
+	if _, err := gowebp.Decode(bytes.NewReader(data)); err != nil {
 		return 0
 	}
 	return 1

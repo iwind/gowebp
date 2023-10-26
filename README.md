@@ -43,7 +43,7 @@ import (
 	"io/ioutil"
 	"log"
 
-	"github.com/chai2010/webp"
+	"github.com/iwind/gowebp"
 )
 
 func main() {
@@ -58,26 +58,26 @@ func main() {
 	}
 
 	// GetInfo
-	if width, height, _, err = webp.GetInfo(data); err != nil {
+	if width, height, _, err = gowebp.GetInfo(data); err != nil {
 		log.Println(err)
 	}
 	fmt.Printf("width = %d, height = %d\n", width, height)
 
 	// GetMetadata
-	if metadata, err := webp.GetMetadata(data, "ICCP"); err != nil {
+	if metadata, err := gowebp.GetMetadata(data, "ICCP"); err != nil {
 		fmt.Printf("Metadata: err = %v\n", err)
 	} else {
 		fmt.Printf("Metadata: %s\n", string(metadata))
 	}
 
 	// Decode webp
-	m, err := webp.Decode(bytes.NewReader(data))
+	m, err := gowebp.Decode(bytes.NewReader(data))
 	if err != nil {
 		log.Println(err)
 	}
 
 	// Encode lossless webp
-	if err = webp.Encode(&buf, m, &webp.Options{Lossless: true}); err != nil {
+	if err = gowebp.Encode(&buf, m, &gowebp.Options{Lossless: true}); err != nil {
 		log.Println(err)
 	}
 	if err = ioutil.WriteFile("output.webp", buf.Bytes(), 0666); err != nil {
