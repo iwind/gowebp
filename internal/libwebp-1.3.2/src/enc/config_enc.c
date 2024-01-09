@@ -52,7 +52,7 @@ int WebPConfigInitInternal(WebPConfig* config,
   config->exact = 0;
   config->image_hint = WEBP_HINT_DEFAULT;
   config->emulate_jpeg_size = 0;
-  config->thread_level = 0;
+  config->thread_level = 1;
   config->low_memory = 0;
   config->near_lossless = 100;
   config->use_delta_palette = 0;

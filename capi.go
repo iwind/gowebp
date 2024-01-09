@@ -15,6 +15,7 @@
 package gowebp
 
 /*
+#cgo CFLAGS: -O2
 #cgo CFLAGS: -I./internal/libwebp-1.3.2/
 #cgo CFLAGS: -I./internal/libwebp-1.3.2/src/
 #cgo CFLAGS: -I./internal/libwebp-1.3.2/sharpyuv/
